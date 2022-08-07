@@ -1,17 +1,10 @@
-const DB = {
-    users: require('../models/users.json'),
-    setUsers: (users) => {
-        DB.users = users;
-    }
-}
-
 const fsPromises = require('fs').promises;
 const path = require('path');
 
 const registerController = async (req, res) => {
-    const {username, password} = req.body;
+    const {username, pass_image,category} = req.body;
 
-    if (!username || !password) {
+    if (!username || !pass_image || !category) {
         return res.status(400).json({
             message: 'Please provide username and password'
         });
@@ -30,7 +23,9 @@ const registerController = async (req, res) => {
 
         usersArray.push({
             username,
-            password
+            pass_image,
+            category,
+            pattern: '',
         });
 
         // inserting data into DB
