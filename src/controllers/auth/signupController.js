@@ -10,6 +10,7 @@ const signupController = async (req, res) => {
     //bad request
     return res.status(400).json({
       message: "Please provide username and password",
+      isExist: true,
     });
   }
 
@@ -26,11 +27,17 @@ const signupController = async (req, res) => {
       //conflict
       return res.status(409).json({
         message: "Username already exists",
+        isExist: true,
       });
     }
 
     //inserting new user
-    const insertedArray = await createNewUser(usersArray, username, email, category);
+    const insertedArray = await createNewUser(
+      usersArray,
+      username,
+      email,
+      category
+    );
 
     // inserting data into DB
     await fsPromises.writeFile(
@@ -38,11 +45,14 @@ const signupController = async (req, res) => {
       JSON.stringify(insertedArray)
     );
 
-    return res.status(201).json({ message: "User created successfully" });
+    return res
+      .status(201)
+      .json({ message: "User created successfully", isExist: false });
   } catch (e) {
     console.log(e);
     return res.status(500).json({
       message: "Something went wrong",
+      isExist: true,
     });
   }
 };
