@@ -13,7 +13,7 @@ const loginController = async (req, res) => {
   try {
     const usersArray = JSON.parse(
       await fsPromises.readFile(
-        path.join(__dirname, "..", "..", "models", "users.json"),
+        path.join(__dirname, "..", "models", "users.json"),
         "utf8"
       )
     );
