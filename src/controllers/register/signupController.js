@@ -1,8 +1,6 @@
 const fsPromises = require("fs").promises;
 const path = require("path");
 
-const { createNewUser } = require("../../controllers/modelController");
-
 const signupController = async (req, res) => {
   const { username, email, category } = req.body;
 
@@ -32,17 +30,18 @@ const signupController = async (req, res) => {
     }
 
     //inserting new user
-    const insertedArray = await createNewUser(
-      usersArray,
+    usersArray.push({
       username,
       email,
-      category
-    );
+      pass_image: "",
+      category,
+      pattern: "",
+    });
 
     // inserting data into DB
     await fsPromises.writeFile(
       path.join(__dirname, "..", "..", "models", "users.json"),
-      JSON.stringify(insertedArray)
+      JSON.stringify(usersArray)
     );
 
     return res

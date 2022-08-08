@@ -1,7 +1,6 @@
 const fsPromises = require("fs").promises;
 const path = require("path");
-
-const { registerUserWithImage } = require("../../controllers/modelController");
+const bcrypt = require("bcrypt");
 
 const registerController = async (req, res) => {
   const { username, pass_image } = req.body;
@@ -23,15 +22,21 @@ const registerController = async (req, res) => {
     );
 
     if (!usersArray.find((user) => user.username === username)) {
-      //bad request
-      return res.status(400).json({
+      //conflict
+      return res.status(409).json({
         message: "User does not exist",
         isCreated: false,
       });
     }
 
     //inserting pass_image into DB
-    await registerUserWithImage(usersArray, username, pass_image);
+    let hashedImage = await bcrypt.hash(username, 10);
+
+    //encrypting password
+    hashedImage += pass_image.substring(pass_image.length - 1);
+
+    const user = usersArray.find((user) => user.username === username);
+    user.pass_image = hashedImage;
 
     //inserting data into DB
     await fsPromises.writeFile(

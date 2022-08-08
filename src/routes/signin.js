@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const signinController = require('../controllers/auth/signinController');
+const signinController = require('../controllers/login/loginController');
 
-router.get('/:username', signinController)
+router.get('/', signinController)
 
 module.exports = router;

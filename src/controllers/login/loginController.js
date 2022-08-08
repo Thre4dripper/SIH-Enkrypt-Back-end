@@ -1,8 +1,8 @@
 const fsPromises = require("fs").promises;
 const path = require("path");
 
-const signinController = async (req, res) => {
-  const { username } = req.params;
+const loginController = async (req, res) => {
+  const { username } = req.body;
 
   if (!username) {
     return res.status(400).json({
@@ -13,14 +13,15 @@ const signinController = async (req, res) => {
   try {
     const usersArray = JSON.parse(
       await fsPromises.readFile(
-        path.join(__dirname, "..", "models", "users.json"),
+        path.join(__dirname, "..", "..", "models", "users.json"),
         "utf8"
       )
     );
 
     const user = usersArray.find((user) => user.username === username);
     if (!user) {
-      return res.status(400).json({
+      //forbidden
+      return res.status(403).json({
         message: "Username does not exist",
       });
     }
@@ -33,4 +34,4 @@ const signinController = async (req, res) => {
   }
 };
 
-module.exports = signinController;
+module.exports = loginController;
