@@ -2,10 +2,10 @@ const fsPromises = require("fs").promises;
 const path = require("path");
 const bcrypt = require("bcrypt");
 
-const signupController = async (req, res) => {
-  const { username, email, category } = req.body;
+const checkDuplicateUser = async (req, res) => {
+  const { username } = req.body;
 
-  if (!username || !email || !category) {
+  if (!username) {
     //bad request
     return res.status(400).json({
       message: "Please provide username and password",
@@ -30,24 +30,9 @@ const signupController = async (req, res) => {
       });
     }
 
-    //inserting new user
-    usersArray.push({
-      username,
-      email,
-      pass_image: "",
-      category,
-      pattern: "",
-    });
-
-    // inserting data into DB
-    await fsPromises.writeFile(
-      path.join(__dirname, "..", "models", "users.json"),
-      JSON.stringify(usersArray)
-    );
-
     return res
-      .status(201)
-      .json({ message: "User created successfully", isExist: false });
+      .status(200)
+      .json({ message: "User Doesn't Exist", isExist: false });
   } catch (e) {
     console.log(e);
     return res.status(500).json({
@@ -57,13 +42,13 @@ const signupController = async (req, res) => {
   }
 };
 
-const registerController = async (req, res) => {
-  const { username, pass_image } = req.body;
+const signUpController = async (req, res) => {
+  const { username, email, pass_image, category } = req.body;
 
-  if (!username || !pass_image) {
+  if (!username || !email || !pass_image || !category) {
     //bad request
     return res.status(400).json({
-      message: "Please provide password image",
+      message: "Empty Fields",
       isCreated: false,
     });
   }
@@ -76,30 +61,35 @@ const registerController = async (req, res) => {
       )
     );
 
-    if (!usersArray.find((user) => user.username === username)) {
+    // Check if user already exists
+    if (usersArray.find((user) => user.username === username)) {
       //conflict
       return res.status(409).json({
-        message: "User does not exist",
+        message: "Username already exists",
         isCreated: false,
       });
     }
 
-    //inserting pass_image into DB
-    let hashedImage = await bcrypt.hash(username, 10);
 
-    //encrypting password
+    //encrypting pass_image
+    let hashedImage = await bcrypt.hash(username, 10);
     hashedImage += pass_image.substring(pass_image.length - 1);
 
-    const user = usersArray.find((user) => user.username === username);
-    user.pass_image = hashedImage;
+    //inserting data into array
+    usersArray.push({
+      username,
+      email,
+      pass_image: hashedImage,
+      category,
+      pattern: "",
+    });
 
-    //inserting data into DB
+    //writing data into DB
     await fsPromises.writeFile(
       path.join(__dirname, "..", "models", "users.json"),
       JSON.stringify(usersArray)
     );
 
-    //successful registration
     return res
       .status(201)
       .json({ message: "User registered successfully", isCreated: true });
@@ -112,4 +102,4 @@ const registerController = async (req, res) => {
   }
 };
 
-module.exports = { signupController, registerController };
+module.exports = { checkDuplicateUser, signUpController };
