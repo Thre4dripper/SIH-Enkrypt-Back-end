@@ -21,15 +21,6 @@ const signUpController = async (req, res) => {
       )
     );
 
-    // Check if user already exists
-    if (usersArray.find((user) => user.username === username)) {
-      //conflict
-      return res.status(409).json({
-        message: "Username already exists",
-        isCreated: false,
-      });
-    }
-
     //encrypting pass_image
     let hashedImage = await bcrypt.hash(username, 10);
     hashedImage += pass_image.substring(pass_image.length - 1);
