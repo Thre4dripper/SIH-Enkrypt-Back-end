@@ -2,46 +2,6 @@ const fsPromises = require("fs").promises;
 const path = require("path");
 const bcrypt = require("bcrypt");
 
-const checkDuplicateUser = async (req, res) => {
-  const { username } = req.body;
-
-  if (!username) {
-    //bad request
-    return res.status(400).json({
-      message: "Please provide username and password",
-      isExist: true,
-    });
-  }
-
-  try {
-    const usersArray = JSON.parse(
-      await fsPromises.readFile(
-        path.join(__dirname, "..", "models", "users.json"),
-        "utf8"
-      )
-    );
-
-    // Check if user already exists
-    if (usersArray.find((user) => user.username === username)) {
-      //conflict
-      return res.status(409).json({
-        message: "Username already exists",
-        isExist: true,
-      });
-    }
-
-    return res
-      .status(200)
-      .json({ message: "User Doesn't Exist", isExist: false });
-  } catch (e) {
-    console.log(e);
-    return res.status(500).json({
-      message: "Something went wrong",
-      isExist: true,
-    });
-  }
-};
-
 const signUpController = async (req, res) => {
   const { username, email, pass_image, category } = req.body;
 
@@ -69,7 +29,6 @@ const signUpController = async (req, res) => {
         isCreated: false,
       });
     }
-
 
     //encrypting pass_image
     let hashedImage = await bcrypt.hash(username, 10);
@@ -102,4 +61,4 @@ const signUpController = async (req, res) => {
   }
 };
 
-module.exports = { checkDuplicateUser, signUpController };
+module.exports = { signUpController };
