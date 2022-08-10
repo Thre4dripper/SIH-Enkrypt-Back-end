@@ -1,7 +1,9 @@
 const User = require("../models/user");
 
 const userCheck = (type) => async (req, res, next) => {
-  const { username } = req.body;
+  let { username } = req.body;
+
+  username = username.toLowerCase();
 
   if (!username) {
     //bad request
