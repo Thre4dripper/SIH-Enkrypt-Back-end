@@ -1,13 +1,11 @@
-const fsPromises = require("fs").promises;
-const path = require("path");
+const User = require("../models/user");
 
 const { randomBinary } = require("../utils/utils");
 const generateImagesPattern = require("../utils/generatePattern");
 const { CATS_COUNT, DOGS_COUNT } = require("../config/Constants");
 
 /** =========================== FUNCTION FOR CREATING AND STORING LOGIN PATTERN  ==============================*/
-const createLoginPattern = (init, usersArray, username) => {
-  const user = usersArray.find((user) => user.username === username);
+const createLoginPattern = async (init, user) => {
   let pattern = user.pattern;
 
   pattern = pattern.split(":")[0];
@@ -28,11 +26,7 @@ const createLoginPattern = (init, usersArray, username) => {
   pattern += ":" + (new Date().getTime() + 5 * 60 * 1000);
   user.pattern = pattern;
 
-  //writing data into DB
-  fsPromises.writeFile(
-    path.join(__dirname, "..", "models", "users.json"),
-    JSON.stringify(usersArray)
-  );
+  await user.save();
 };
 
 /** =========================== FUNCTION FOR SENDING RANDOM IMAGE PATTERN TO CLIENT ==============================*/
@@ -45,17 +39,11 @@ const imagePattern = async (req, res) => {
       .json({ message: "username not found", success: false });
   }
 
-  const usersArray = JSON.parse(
-    await fsPromises.readFile(
-      path.join(__dirname, "..", "models", "users.json"),
-      "utf8"
-    )
-  );
+  const user = await User.findOne({ username }).exec();
 
   //firstly creating login pattern to be stored in DB
-  createLoginPattern(true, usersArray, username);
+  await createLoginPattern(true, user);
 
-  const user = usersArray.find((user) => user.username === username);
   let { pattern, category, pass_image } = user;
 
   //getting pass_image value and login pattern value
@@ -100,14 +88,8 @@ const validateLogin = async (req, res) => {
   }
 
   try {
-    const usersArray = JSON.parse(
-      await fsPromises.readFile(
-        path.join(__dirname, "..", "models", "users.json"),
-        "utf8"
-      )
-    );
 
-    const user = usersArray.find((user) => user.username === username);
+    const user = await User.findOne({ username }).exec();
     const dbPattern = user.pattern.split(":")[0];
     const dbTimestamp = +user.pattern.split(":")[1];
 
@@ -128,7 +110,7 @@ const validateLogin = async (req, res) => {
       });
     } else {
       //for every wrong attemp, pattern is reset and increased by 1
-      createLoginPattern(false, usersArray, username);
+      await createLoginPattern(false, user);
 
       //returning failure message
       return res.status(401).json({
