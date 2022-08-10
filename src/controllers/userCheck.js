@@ -1,7 +1,7 @@
 const fsPromises = require("fs").promises;
 const path = require("path");
 
-const userCheck = (type) => async (req, res) => {
+const userCheck = (type) => async (req, res,next) => {
   const { username } = req.body;
 
   if (!username) {
@@ -36,9 +36,7 @@ const userCheck = (type) => async (req, res) => {
     } else if (type === "signin") {
       //user must exist when signing in
       if (user)
-        return res
-          .status(200)
-          .json({ message: "User already exist", isExist: true });
+        next();
       //conflict
       else
         return res
