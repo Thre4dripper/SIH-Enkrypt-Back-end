@@ -1,7 +1,6 @@
-const fsPromises = require("fs").promises;
-const path = require("path");
+const User = require("../models/user");
 
-const userCheck = (type) => async (req, res,next) => {
+const userCheck = (type) => async (req, res, next) => {
   const { username } = req.body;
 
   if (!username) {
@@ -13,14 +12,7 @@ const userCheck = (type) => async (req, res,next) => {
   }
 
   try {
-    const usersArray = JSON.parse(
-      await fsPromises.readFile(
-        path.join(__dirname, "..", "models", "users.json"),
-        "utf8"
-      )
-    );
-
-    const user = usersArray.find((user) => user.username === username);
+    const user = await User.findOne({ username }).exec();
 
     if (type === "signup") {
       //user must not exist when signing up
@@ -35,8 +27,7 @@ const userCheck = (type) => async (req, res,next) => {
           .json({ message: "User doesn't exist", isExist: false });
     } else if (type === "signin") {
       //user must exist when signing in
-      if (user)
-        next();
+      if (user) next();
       //conflict
       else
         return res

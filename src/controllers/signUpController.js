@@ -1,5 +1,5 @@
-const fsPromises = require("fs").promises;
-const path = require("path");
+const User = require("../models/user");
+
 const bcrypt = require("bcrypt");
 
 const signUpController = async (req, res) => {
@@ -14,31 +14,18 @@ const signUpController = async (req, res) => {
   }
 
   try {
-    const usersArray = JSON.parse(
-      await fsPromises.readFile(
-        path.join(__dirname, "..", "models", "users.json"),
-        "utf8"
-      )
-    );
-
     //encrypting pass_image
     let hashedImage = await bcrypt.hash(username, 10);
     hashedImage += pass_image.substring(pass_image.length - 1);
 
-    //inserting data into array
-    usersArray.push({
+    const user = new User({
       username,
       email,
       pass_image: hashedImage,
       category,
-      pattern: "",
     });
 
-    //writing data into DB
-    await fsPromises.writeFile(
-      path.join(__dirname, "..", "models", "users.json"),
-      JSON.stringify(usersArray)
-    );
+    await user.save();
 
     return res
       .status(201)
