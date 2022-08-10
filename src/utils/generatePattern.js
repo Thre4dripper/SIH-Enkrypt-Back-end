@@ -1,17 +1,17 @@
-const randomArray = require("../utils/randomArray");
+const { randomArray } = require("../utils/utils");
+const { GRID_SIZE } = require("../config/Constants");
 
-const generatePattern = (pattern, categorySize, pass_image) => {
+const generateImagesPattern = (pattern, categorySize, pass_image) => {
   let imagePattern = [];
-  const gridSize = 4;
 
   for (let i = 0; i < pattern.length; i++) {
     let arr = [];
-    for (let j = 0; j < gridSize; j++) {
+    for (let j = 0; j < GRID_SIZE; j++) {
       arr = randomArray(arr, +pass_image, 1, categorySize + 1);
     }
 
     if (pattern[i] === "1") {
-      const index = Math.floor(Math.random() * gridSize);
+      const index = Math.floor(Math.random() * GRID_SIZE);
       arr[index] = +pass_image;
     }
     // const str = arr.join("");
@@ -22,4 +22,4 @@ const generatePattern = (pattern, categorySize, pass_image) => {
   return imagePattern;
 };
 
-module.exports = generatePattern;
+module.exports = generateImagesPattern;

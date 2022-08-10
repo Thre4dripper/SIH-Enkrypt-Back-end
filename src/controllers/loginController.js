@@ -1,8 +1,9 @@
 const fsPromises = require("fs").promises;
 const path = require("path");
 
-const randomBinary = require("../utils/randomBinary");
-const generatePattern = require("../utils/generatePattern");
+const { randomBinary } = require("../utils/utils");
+const generateImagesPattern = require("../utils/generatePattern");
+const { CATS_COUNT, DOGS_COUNT } = require("../config/Constants");
 
 /** =========================== FUNCTION FOR CREATING AND STORING LOGIN PATTERN  ==============================*/
 const createLoginPattern = (init, usersArray, username) => {
@@ -24,7 +25,7 @@ const createLoginPattern = (init, usersArray, username) => {
   }
 
   //writing generated pattern to user's data along with timestamp
-  pattern += ":" + new Date().getTime();
+  pattern += ":" + (new Date().getTime() + 5 * 60 * 1000);
   user.pattern = pattern;
 
   //writing data into DB
@@ -50,6 +51,10 @@ const imagePattern = async (req, res) => {
       "utf8"
     )
   );
+
+  //firstly creating login pattern to be stored in DB
+  createLoginPattern(true, usersArray, username);
+
   const user = usersArray.find((user) => user.username === username);
   let { pattern, category, pass_image } = user;
 
@@ -57,11 +62,26 @@ const imagePattern = async (req, res) => {
   pass_image = pass_image.substring(pass_image.length - 1);
   pattern = pattern.split(":")[0];
 
-  //creating login pattern for storing in db
-  createLoginPattern(true, usersArray, username);
+  //TODO get category from response
+  let categorySize;
+
+  switch (category) {
+    case "Cat":
+      categorySize = CATS_COUNT;
+      break;
+    case "Dog":
+      categorySize = DOGS_COUNT;
+      break;
+    default:
+      categorySize = 0;
+  }
 
   //generating image pattern to be sent to client
-  const imagesPattern = generatePattern(pattern, 5, pass_image);
+  const imagesPattern = generateImagesPattern(
+    pattern,
+    categorySize,
+    pass_image
+  );
 
   return res.status(200).json({
     message: "pattern generated",
