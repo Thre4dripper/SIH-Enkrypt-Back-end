@@ -1,11 +1,11 @@
 const User = require("../models/user");
 
 const { randomBinary } = require("../utils/utils");
-const generateImagesPattern = require("../utils/generatePattern");
+const generatePattern = require("../utils/generatePattern");
 const { CATS_COUNT, DOGS_COUNT } = require("../config/Constants");
 
 /** =========================== FUNCTION FOR CREATING AND STORING LOGIN PATTERN  ==============================*/
-const createLoginPattern = async (init, user, loginId) => {
+const createLoginPattern = async (user, loginId) => {
   const session = user.sessions.find((session) => session.loginId === loginId);
   let pattern;
 
@@ -58,7 +58,7 @@ const imagePattern = async (req, res) => {
   const user = await User.findOne({ username }).exec();
 
   //firstly creating login pattern to be stored in DB and also get it
-  const pattern = await createLoginPattern(true, user, loginId);
+  const pattern = await createLoginPattern(user, loginId);
 
   let { category, pass_image } = user;
 
@@ -79,7 +79,7 @@ const imagePattern = async (req, res) => {
   }
 
   //generating image pattern to be sent to client
-  const imagesPattern = generateImagesPattern(
+  const imagesPattern = generatePattern(
     pattern,
     categorySize,
     pass_image
@@ -124,7 +124,7 @@ const validateLogin = async (req, res) => {
     if (timestamp > dbTimestamp) {
       //clearing pattern from user's data
       //once pattern is cleared, pattern always show pattern expired, unless user relogin with username
-      await clearPattern(user,session);
+      await clearPattern(user, session);
 
       return res.status(401).json({
         message: "Pattern expired, please relogin",
@@ -144,7 +144,7 @@ const validateLogin = async (req, res) => {
       });
     } else {
       //for every wrong attemp, pattern is reset and increased by 1
-      await createLoginPattern(false, user, loginId);
+      await createLoginPattern(user, loginId);
 
       //unauthorized
       return res.status(401).json({

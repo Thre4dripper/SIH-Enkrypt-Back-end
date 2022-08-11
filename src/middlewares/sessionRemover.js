@@ -14,11 +14,9 @@ const sessionRemover = async (req, res, next) => {
   const user = await User.findOne({ username }).exec();
 
   //clearing dead sessions from user's data
-  user.sessions.forEach((session, index) => {
-    if (session.patternTime < timestamp) {
-      user.sessions.splice(index, 1);
-    }
-  });
+  user.sessions = user.sessions.filter(
+    (session) => session.patternTime > timestamp
+  );
 
   await user.save();
 

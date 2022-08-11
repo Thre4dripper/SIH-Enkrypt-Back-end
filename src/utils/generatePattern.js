@@ -1,7 +1,7 @@
 const { randomArray } = require("../utils/utils");
 const { GRID_SIZE } = require("../config/Constants");
 
-const generateImagesPattern = (pattern, categorySize, pass_image) => {
+const generatePattern = (pattern, categorySize, pass_image) => {
   let imagePattern = [];
 
   for (let i = 0; i < pattern.length; i++) {
@@ -22,4 +22,4 @@ const generateImagesPattern = (pattern, categorySize, pass_image) => {
   return imagePattern;
 };
 
-module.exports = generateImagesPattern;
+module.exports = generatePattern;

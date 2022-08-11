@@ -8,6 +8,6 @@ const { validateUser } = require("../middlewares/auth");
 const { sessionRemover } = require("../middlewares/sessionRemover");
 
 router.post("/check", userCheck("signin"), sessionRemover, imagePattern);
-router.post("/", validateUser("signin"), sessionRemover, validateLogin);
+router.post("/", validateUser("signin"), validateLogin);
 
 module.exports = router;
