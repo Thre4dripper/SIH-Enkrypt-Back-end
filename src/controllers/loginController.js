@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const bcrypt = require("bcrypt");
 
 const { randomBinary } = require("../utils/utils");
 const generateImagesPattern = require("../utils/generatePattern");
@@ -8,23 +9,19 @@ const { CATS_COUNT, DOGS_COUNT } = require("../config/Constants");
 const createLoginPattern = async (init, user) => {
   let pattern = user.pattern;
 
-  pattern = pattern.split(":")[0];
-
   //randomBinary function is used to generate pattern
 
   /*
   IT WILL RETURN PATTERN WITH LENGTH OF 5 WHEN PATTERN IS EMPTY
   IT WILL RETURN PATTERN WITH LENGTH INCREASED BY 1 WHEN PATTERN IS NOT EMPTY
   */
-  if (init) {
-    pattern = randomBinary("");
-  } else {
-    pattern = randomBinary(pattern);
-  }
 
+  pattern = randomBinary(pattern);
+
+  // pattern = await bcrypt.hash(pattern, 10);
   //writing generated pattern to user's data along with timestamp
-  pattern += ":" + (new Date().getTime() + 60 * 1000);
   user.pattern = pattern;
+  user.timestamp = new Date().getTime() + 60 * 1000;
 
   await user.save();
 };
@@ -32,6 +29,7 @@ const createLoginPattern = async (init, user) => {
 /** =========================== FUNCTION FOR CLEARING PATTERN FROM DATABASE ==============================*/
 const clearPattern = async (user) => {
   user.pattern = "";
+  user.timestamp = 0;
   await user.save();
 };
 
@@ -94,12 +92,13 @@ const validateLogin = async (req, res) => {
 
   try {
     const user = await User.findOne({ username }).exec();
-    const dbPattern = user.pattern.split(":")[0];
-    const dbTimestamp = +user.pattern.split(":")[1];
+    const dbPattern = user.pattern;
+    const dbTimestamp = user.timestamp;
 
     //checking validity of pattern by timestamp
     if (timestamp > dbTimestamp) {
       //clearing pattern from user's data
+        //once pattern is cleared, pattern always show pattern expired, unless user relogin with username
       await clearPattern(user);
 
       return res.status(401).json({
