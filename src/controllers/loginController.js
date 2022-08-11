@@ -23,9 +23,15 @@ const createLoginPattern = async (init, user) => {
   }
 
   //writing generated pattern to user's data along with timestamp
-  pattern += ":" + (new Date().getTime() + 5 * 60 * 1000);
+  pattern += ":" + (new Date().getTime() + 60 * 1000);
   user.pattern = pattern;
 
+  await user.save();
+};
+
+/** =========================== FUNCTION FOR CLEARING PATTERN FROM DATABASE ==============================*/
+const clearPattern = async (user) => {
+  user.pattern = "";
   await user.save();
 };
 
@@ -50,7 +56,6 @@ const imagePattern = async (req, res) => {
   pass_image = pass_image.substring(pass_image.length - 1);
   pattern = pattern.split(":")[0];
 
-  //TODO get category from response
   let categorySize;
 
   switch (category) {
@@ -88,13 +93,15 @@ const validateLogin = async (req, res) => {
   }
 
   try {
-
     const user = await User.findOne({ username }).exec();
     const dbPattern = user.pattern.split(":")[0];
     const dbTimestamp = +user.pattern.split(":")[1];
 
     //checking validity of pattern by timestamp
     if (timestamp > dbTimestamp) {
+      //clearing pattern from user's data
+      await clearPattern(user);
+
       return res.status(401).json({
         message: "Pattern expired",
         success: false,
@@ -103,6 +110,9 @@ const validateLogin = async (req, res) => {
 
     //comparing pattern
     if (dbPattern === pattern) {
+      //clearing pattern from user's data
+      await clearPattern(user);
+
       //returning success message
       return res.status(200).json({
         message: "pattern validated",
