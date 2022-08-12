@@ -7,7 +7,7 @@ const generatePattern = (pattern, categorySize, pass_image) => {
   for (let i = 0; i < pattern.length; i++) {
     let arr = [];
     for (let j = 0; j < GRID_SIZE; j++) {
-      arr = randomArray(arr, +pass_image, 1, categorySize + 1);
+      arr = randomArray(arr, +pass_image, 0, categorySize);
     }
 
     if (pattern[i] === "1") {

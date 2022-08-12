@@ -3,11 +3,7 @@ const bcrypt = require("bcrypt");
 
 const { randomBinary } = require("../utils/utils");
 const generatePattern = require("../utils/generatePattern");
-const {
-  CATS_COUNT,
-  DOGS_COUNT,
-  USER_RATE_LIMIT_WINDOW,
-} = require("../config/Constants");
+const { USER_RATE_LIMIT_WINDOW } = require("../config/Constants");
 
 /** =========================== FUNCTION FOR CREATING AND STORING LOGIN PATTERN  ==============================*/
 const createLoginPattern = async (user, loginId) => {
@@ -52,12 +48,10 @@ const clearPattern = async (user, session) => {
 
 /** =========================== FUNCTION FOR SENDING RANDOM IMAGE PATTERN TO CLIENT ==============================*/
 const imagePattern = async (req, res) => {
-  const { username, loginId } = req.body;
+  const { username, loginId, categoriesLength } = req.body;
 
-  if (!username || !loginId) {
-    return res
-      .status(400)
-      .json({ message: "username, loginId not found", success: false });
+  if (!username || !loginId || !categoriesLength) {
+    return res.status(400).json({ message: "Empty Field(s)", success: false });
   }
 
   const user = await User.findOne({ username }).exec();
@@ -70,17 +64,15 @@ const imagePattern = async (req, res) => {
   //getting pass_image value and login pattern value
   pass_image = pass_image.substring(pass_image.length - 1);
 
-  let categorySize;
+  const categorySize = categoriesLength.find(
+    (item) => item.category.toLowerCase() === category
+  )?.length;
 
-  switch (category) {
-    case "Cat":
-      categorySize = CATS_COUNT;
-      break;
-    case "Dog":
-      categorySize = DOGS_COUNT;
-      break;
-    default:
-      categorySize = 0;
+  if (!categorySize) {
+    //bad request
+    return res
+      .status(400)
+      .json({ message: "Category not found", success: false });
   }
 
   //generating image pattern to be sent to client

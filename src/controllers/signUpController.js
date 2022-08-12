@@ -22,7 +22,7 @@ const signUpController = async (req, res) => {
       username,
       email,
       pass_image: hashedImage,
-      category,
+      category: category.toLowerCase(),
     });
 
     await user.save();
