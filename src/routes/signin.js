@@ -6,8 +6,15 @@ const { imagePattern } = require("../controllers/loginController");
 const { validateLogin } = require("../controllers/loginController");
 const { validateUser } = require("../middlewares/auth");
 const { sessionRemover } = require("../middlewares/sessionRemover");
+const userRateLimiter = require("../middlewares/userRateLimiter");
 
-router.post("/check", userCheck("signin"), sessionRemover, imagePattern);
+router.post(
+  "/check",
+  userCheck("signin"),
+  userRateLimiter,
+  sessionRemover,
+  imagePattern
+);
 router.post("/", validateUser("signin"), validateLogin);
 
 module.exports = router;

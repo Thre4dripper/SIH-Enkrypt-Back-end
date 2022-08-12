@@ -3,7 +3,11 @@ const bcrypt = require("bcrypt");
 
 const { randomBinary } = require("../utils/utils");
 const generatePattern = require("../utils/generatePattern");
-const { CATS_COUNT, DOGS_COUNT } = require("../config/Constants");
+const {
+  CATS_COUNT,
+  DOGS_COUNT,
+  USER_RATE_LIMIT_WINDOW,
+} = require("../config/Constants");
 
 /** =========================== FUNCTION FOR CREATING AND STORING LOGIN PATTERN  ==============================*/
 const createLoginPattern = async (user, loginId) => {
@@ -24,6 +28,8 @@ const createLoginPattern = async (user, loginId) => {
     const index = user.sessions.indexOf(session);
     user.sessions[index].pattern = hashedPattern;
   }
+
+  if (user.lastLogin === 0) user.lastLogin = new Date().getTime() + USER_RATE_LIMIT_WINDOW;
 
   await user.save();
   return pattern;
@@ -113,10 +119,10 @@ const validateLogin = async (req, res) => {
 
     //getting pattern,patternTime from session
     const dbPattern = session.pattern;
-    const dbTimestamp = session.patternTime;
+    const dbPatternTimestamp = session.patternTime;
 
     //checking validity of pattern by timestamp
-    if (timestamp > dbTimestamp) {
+    if (timestamp > dbPatternTimestamp) {
       //clearing pattern from user's data
       //once pattern is cleared, pattern always show pattern expired, unless user relogin with username
       await clearPattern(user, session);

@@ -5,8 +5,6 @@ const sessionSchema = new Schema({
   loginId: { type: String, default: "" },
   pattern: { type: String, default: "" },
   patternTime: { type: Number, default: 0 },
-  // rateLimit: { type: Number, default: 20 },
-  // rateLimitTime: { type: Number, default: 0 },
 });
 
 const userSchema = new Schema({
@@ -18,6 +16,7 @@ const userSchema = new Schema({
     type: [sessionSchema],
     default: [],
   },
+  lastLogin: { type: Number, default: 0 },
 });
 
 const User = mongoose.model("User", userSchema);

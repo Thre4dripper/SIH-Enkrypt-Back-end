@@ -10,7 +10,7 @@ const mongoose = require("mongoose");
 const DATABASE_URI = process.env.DATABASE_URI;
 
 //rate limiter middleware
-const rateLimiter = require("./src/middlewares/rateLimiter");
+const rateLimiter = require("./src/middlewares/ipRateLimiter");
 
 mongoose.connect(DATABASE_URI, { useNewUrlParser: true });
 const db = mongoose.connection;

@@ -5,8 +5,8 @@ module.exports = {
   DOGS_COUNT: 5,
 
   IP_RATE_LIMIT_WINDOW: 15 * 60 * 1000, // 15 minutes
-  IP_RATE_LIMIT_MAX: 20, // start blocking after 20 requests
+  IP_RATE_LIMIT_MAX: 100, // start blocking after 100 requests
 
-  USER_RATE_LIMIT_WINDOW: 30 * 60 * 1000, // 30 minutes
+  USER_RATE_LIMIT_WINDOW: 10 * 60 * 1000, // 10 minutes
   USER_RATE_LIMIT_MAX: 10, // start blocking after 20 requests
 };
