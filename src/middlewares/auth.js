@@ -3,8 +3,6 @@ const User = require("../models/user");
 const validateUser = (type) => async (req, res, next) => {
   let { username } = req.body;
 
-  username = username.toLowerCase();
-
   if (!username) {
     //bad request
     return res.status(400).json({
@@ -12,6 +10,10 @@ const validateUser = (type) => async (req, res, next) => {
       isExist: true,
     });
   }
+
+  username = username.toLowerCase();
+  //lowercased request body username for subsequent requests
+  req.body.username = username;
 
   try {
     const user = await User.findOne({ username }).exec();
