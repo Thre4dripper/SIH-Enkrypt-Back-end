@@ -4,13 +4,11 @@ const { GRIDS_COUNT } = require("../config/Constants");
 const randomInt = (min, max) => Math.floor(Math.random() * (max - min) + min);
 
 /**========================== FUNCTION FOR GENERATING RANDOM BINARY STRING ===============================*/
-const randomBinary = (pattern) => {
-  let patternLength = pattern.length;
-  if (patternLength === 0) patternLength = GRIDS_COUNT;
-  else patternLength++;
+const randomBinary = (atempts) => {
+  let patternLength = GRIDS_COUNT + atempts;
 
-    let number = randomInt(0, Math.pow(2, patternLength));
-    
+  let number = randomInt(0, Math.pow(2, patternLength));
+
   let str = "";
   while (number !== 0) {
     str += number % 2;

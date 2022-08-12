@@ -8,7 +8,11 @@ const { USER_RATE_LIMIT_WINDOW } = require("../config/Constants");
 /** =========================== FUNCTION FOR CREATING AND STORING LOGIN PATTERN  ==============================*/
 const createLoginPattern = async (user, loginId) => {
   const session = user.sessions.find((session) => session.loginId === loginId);
-  const pattern = randomBinary("");
+  const attempts = user.__v;
+
+  //pattern length is decided by user attempts
+  const pattern = randomBinary(attempts);
+
   const hashedPattern = await bcrypt.hash(pattern, 10);
 
   //session doesn't exist, creating new session
@@ -25,7 +29,9 @@ const createLoginPattern = async (user, loginId) => {
     user.sessions[index].pattern = hashedPattern;
   }
 
-  if (user.lastLogin === 0) user.lastLogin = new Date().getTime() + USER_RATE_LIMIT_WINDOW;
+  //last login gets reset after user rate window is over
+  if (user.lastLogin === 0)
+    user.lastLogin = new Date().getTime() + USER_RATE_LIMIT_WINDOW;
 
   await user.save();
   return pattern;
