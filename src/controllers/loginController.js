@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const bcrypt = require("bcrypt");
 
 const { randomBinary } = require("../utils/utils");
 const generatePattern = require("../utils/generatePattern");
@@ -7,23 +8,21 @@ const { CATS_COUNT, DOGS_COUNT } = require("../config/Constants");
 /** =========================== FUNCTION FOR CREATING AND STORING LOGIN PATTERN  ==============================*/
 const createLoginPattern = async (user, loginId) => {
   const session = user.sessions.find((session) => session.loginId === loginId);
-  let pattern;
+  const pattern = randomBinary("");
+  const hashedPattern = await bcrypt.hash(pattern, 10);
 
   //session doesn't exist, creating new session
   if (!session) {
-    pattern = randomBinary("");
-
     user.sessions.push({
       loginId,
-      pattern,
+      pattern: hashedPattern,
       patternTime: new Date().getTime() + 60 * 1000, //1 minute,
     });
   }
   //session exists, updating pattern and timestamp
   else {
     const index = user.sessions.indexOf(session);
-    pattern = randomBinary(session.pattern);
-    user.sessions[index].pattern = pattern;
+    user.sessions[index].pattern = hashedPattern;
   }
 
   await user.save();
@@ -79,11 +78,7 @@ const imagePattern = async (req, res) => {
   }
 
   //generating image pattern to be sent to client
-  const imagesPattern = generatePattern(
-    pattern,
-    categorySize,
-    pass_image
-  );
+  const imagesPattern = generatePattern(pattern, categorySize, pass_image);
 
   return res.status(200).json({
     message: "pattern generated",
@@ -133,7 +128,7 @@ const validateLogin = async (req, res) => {
     }
 
     //checking pattern
-    if (dbPattern === pattern) {
+    if (await bcrypt.compare(pattern, dbPattern)) {
       //clearing session after successful login
       await clearSession(user);
 
@@ -143,7 +138,10 @@ const validateLogin = async (req, res) => {
         success: true,
       });
     } else {
-      //for every wrong attemp, pattern is reset and increased by 1
+      /*
+      for wrong atempts, pattern gets reset for security reasons,
+      althoguh user gets redirected to login page for new pattern
+      */
       await createLoginPattern(user, loginId);
 
       //unauthorized
