@@ -10,7 +10,7 @@ const mongoose = require("mongoose");
 const DATABASE_URI = process.env.DATABASE_URI;
 
 //rate limiter middleware
-const rateLimiter = require("./src/middlewares/ipRateLimiter");
+const ipRateLimiter = require("./src/middlewares/ipRateLimiter");
 
 mongoose.connect(DATABASE_URI, { useNewUrlParser: true });
 const db = mongoose.connection;
@@ -19,8 +19,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/signup", rateLimiter, require("./src/routes/signUp"));
-app.use("/signin", rateLimiter, require("./src/routes/signIn"));
+app.use("/signup", ipRateLimiter, require("./src/routes/signUp"));
+app.use("/signin", ipRateLimiter, require("./src/routes/signIn"));
+app.use('/otp', ipRateLimiter, require('./src/routes/otp'));
 
 db.once("open", () => {
   console.log("Connected to MongoDB");

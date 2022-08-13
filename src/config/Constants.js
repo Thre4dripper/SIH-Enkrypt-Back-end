@@ -7,4 +7,6 @@ module.exports = {
 
   USER_RATE_LIMIT_WINDOW: 10 * 60 * 1000, // 10 minutes
   USER_RATE_LIMIT_MAX: 10, // start blocking after 20 requests
+
+  OTP_EXPIRY_TIME: 5 * 60 * 1000, // 5 minutes
 };

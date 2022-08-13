@@ -16,6 +16,8 @@ const userSchema = new Schema({
     type: [sessionSchema],
     default: [],
   },
+  otp: { type: String, default: "" },
+  otpTime: { type: Number, default: 0 },
   lastLogin: { type: Number, default: 0 },
 });
 
