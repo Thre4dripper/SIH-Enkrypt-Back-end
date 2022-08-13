@@ -18,13 +18,24 @@ const generateOtp = async (req, res) => {
   const otp = Math.floor(Math.random() * 1000000);
 
   try {
-    // await clientSendOTP(user, otp);
+    //sending OTP to user's email
+    await clientSendOTP(user, otp);
+
+    //saving OTP in database
     await dbSaveOTP(user, otp);
+
+    const maskedEmail =
+      user.email.substring(0, 3) +
+      "****" +
+      user.email.substring(user.email.indexOf("@") - 3);
+
+    //success
     res.status(200).json({
       message: `OTP sent successfully to ${user.username}'s registered email`,
-      email: user.email,
+      email: maskedEmail,
     });
   } catch (err) {
+    console.log(err);
     return res.status(500).send({
       message: "Something went wrong",
     });
