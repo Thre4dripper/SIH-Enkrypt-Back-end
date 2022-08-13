@@ -27,12 +27,13 @@ const generateOtp = async (req, res) => {
     const maskedEmail =
       user.email.substring(0, 3) +
       "****" +
-      user.email.substring(user.email.indexOf("@") - 3);
+      user.email.substring(user.email.indexOf("@") - 1);
 
     //success
     res.status(200).json({
       message: `OTP sent successfully to ${user.username}'s registered email`,
       email: maskedEmail,
+      success: true,
     });
   } catch (err) {
     console.log(err);
