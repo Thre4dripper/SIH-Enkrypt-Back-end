@@ -1,9 +1,9 @@
-const User = require("../models/user");
 const bcrypt = require("bcrypt");
 
+const User = require("../models/user");
 const { randomBinary } = require("../utils/utils");
 const generatePattern = require("../utils/generatePattern");
-const { USER_RATE_LIMIT_WINDOW } = require("../config/Constants");
+const { USER_RATE_LIMIT_WINDOW, SESSION_TIMEOUT } = require("../config/Constants");
 
 /** =========================== FUNCTION FOR CREATING AND STORING LOGIN PATTERN  ==============================*/
 const createLoginPattern = async (user, loginId) => {
@@ -20,7 +20,7 @@ const createLoginPattern = async (user, loginId) => {
     user.sessions.push({
       loginId,
       pattern: hashedPattern,
-      patternTime: new Date().getTime() + 60 * 1000, //1 minute,
+      patternTime: new Date().getTime() + SESSION_TIMEOUT,
     });
   }
   //session exists, updating pattern and timestamp
@@ -94,9 +94,9 @@ const imagePattern = async (req, res) => {
 
 /** =========================== FUNCTION FOR FINAL VALIDATION OF USER BY PATTERN  ==============================*/
 const validateLogin = async (req, res) => {
-  const { username, loginId, pattern, timestamp } = req.body;
+  const { username, loginId, pattern } = req.body;
 
-  if (!username || !loginId || !pattern || !timestamp) {
+  if (!username || !loginId || !pattern) {
     return res.status(400).json({ message: "Empty Field(s)", success: false });
   }
 
@@ -118,6 +118,7 @@ const validateLogin = async (req, res) => {
     //getting pattern,patternTime from session
     const dbPattern = session.pattern;
     const dbPatternTimestamp = session.patternTime;
+    const timestamp = Date.now();
 
     //checking validity of pattern by timestamp
     if (timestamp > dbPatternTimestamp) {
@@ -135,6 +136,9 @@ const validateLogin = async (req, res) => {
     if (await bcrypt.compare(pattern, dbPattern)) {
       //clearing session after successful login
       await clearSession(user);
+
+      user.__v = 0;
+      await user.save();
 
       //returning success message
       return res.status(200).json({

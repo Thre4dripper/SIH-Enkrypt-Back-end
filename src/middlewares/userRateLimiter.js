@@ -2,18 +2,19 @@ const { USER_RATE_LIMIT_MAX } = require("../config/Constants");
 const User = require("../models/user");
 
 const userRateLimiter = async (req, res, next) => {
-  const { username, timestamp } = req.body;
+  const { username } = req.body;
 
-  if (!username || !timestamp) {
+  if (!username) {
     //bad request
     return res
       .status(400)
-      .json({ message: "username, timestamp not found", success: false });
+      .json({ message: "username not found", success: false });
   }
 
   const user = await User.findOne({ username });
   const attempts = user.__v;
   const lastLogin = user.lastLogin;
+  const timestamp = Date.now();
 
   if (attempts >= USER_RATE_LIMIT_MAX && timestamp < lastLogin) {
     return res
