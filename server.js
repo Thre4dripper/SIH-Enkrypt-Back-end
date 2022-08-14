@@ -16,7 +16,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/signup", ipRateLimiter, require("./src/routes/signUp"));
 app.use("/signin", ipRateLimiter, require("./src/routes/signIn"));
-app.use('/otp', ipRateLimiter, require('./src/routes/otp'));
+app.use("/otp", ipRateLimiter, require("./src/routes/otp"));
+app.use("/contactus", ipRateLimiter, require("./src/routes/contactUs"));
 
 db.once("open", () => {
   console.log("Connected to MongoDB");

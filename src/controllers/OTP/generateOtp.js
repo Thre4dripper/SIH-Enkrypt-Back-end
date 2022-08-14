@@ -3,6 +3,7 @@ const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 const { OTP_EXPIRY_TIME } = require("../../config/Constants");
 const User = require("../../models/user");
+const sendMailPromise = require("../../utils/sendMailPromise");
 
 const generateOtp = async (req, res) => {
   const { username } = req.body;
@@ -89,18 +90,5 @@ const clientSendOTP = async (user, otp) => {
   return await sendMailPromise(transporter, mailOptions);
 };
 
-const sendMailPromise = async (transporter, mailOptions) => {
-  return new Promise((resolve, reject) => {
-    transporter.sendMail(mailOptions, (err, info) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(info);
-      }
-    });
-  }).catch((err) => {
-    console.log(err);
-  });
-};
 
 module.exports = { generateOtp };
