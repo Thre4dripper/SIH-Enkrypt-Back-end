@@ -15,8 +15,8 @@ const signUpController = async (req, res) => {
 
   try {
     //encrypting pass_image
-    let hashedImage = await bcrypt.hash(username, 10);
-    hashedImage += pass_image.substring(pass_image.length - 1);
+    const imageNumber = pass_image.substring(pass_image.indexOf("_")+1);
+    const hashedImage = await bcrypt.hash(imageNumber, 10);
 
     const user = new User({
       username,

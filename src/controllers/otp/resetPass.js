@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const User = require("../../models/user");
 
+/**==================================== FUNCTION FOR RESETTING USER PASS IMAGE ===========================================**/
 const resetPass = async (req, res) => {
   const { username, category, pass_image } = req.body;
 
@@ -12,12 +13,12 @@ const resetPass = async (req, res) => {
   }
 
   //again encrypting pass_image
-  let hashedPass = await bcrypt.hash(username, 10);
-  hashedPass += pass_image.substring(pass_image.length - 1);
+  const imageNumber = pass_image.substring(pass_image.indexOf("_")+1);
+  const hashedImage = await bcrypt.hash(imageNumber, 10);
 
   await User.findOneAndUpdate(
     { username },
-    { pass_image: hashedPass, category: category.toString().toLowerCase() }
+    { pass_image: hashedImage, category: category.toString().toLowerCase() }
   );
 
   return res.status(200).json({

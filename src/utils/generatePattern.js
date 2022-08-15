@@ -1,18 +1,18 @@
 const { randomArray } = require("../utils/utils");
 const { GRID_SIZE } = require("../config/Constants");
 
-const generatePattern = (pattern, categorySize, pass_image) => {
+const generatePattern = (pattern, categorySize, imageNumber) => {
   let imagePattern = [];
 
   for (let i = 0; i < pattern.length; i++) {
     let arr = [];
     for (let j = 0; j < GRID_SIZE; j++) {
-      arr = randomArray(arr, +pass_image, 0, categorySize);
+      arr = randomArray(arr, imageNumber, 0, categorySize);
     }
 
     if (pattern[i] === "1") {
       const index = Math.floor(Math.random() * GRID_SIZE);
-      arr[index] = +pass_image;
+      arr[index] = imageNumber;
     }
     // const str = arr.join("");
 
