@@ -14,7 +14,7 @@ const contactUsController = async (req, res) => {
   }
 
   try {
-    await creatMail(name, email, message);
+    await sendMail(name, email, message);
     res.status(200).json({
       message: "Message sent successfully",
       success: true,
@@ -28,7 +28,7 @@ const contactUsController = async (req, res) => {
   }
 };
 
-const creatMail = (name, email, message) => {
+const sendMail = (name, email, message) => {
   const transporter = nodeMailer.createTransport({
     service: "gmail",
     auth: {

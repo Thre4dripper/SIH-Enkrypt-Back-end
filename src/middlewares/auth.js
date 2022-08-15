@@ -12,7 +12,7 @@ const validateUser = (type) => async (req, res, next) => {
   }
 
   username = username.toLowerCase();
-  //lowercased request body username for subsequent requests
+  //lowercase request body username for subsequent requests
   req.body.username = username;
 
   try {

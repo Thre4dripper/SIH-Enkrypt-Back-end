@@ -7,8 +7,8 @@ const { generateOtp } = require("../controllers/otp/generateOtp");
 const { verifyOtp } = require("../controllers/otp/verifyOtp");
 const resetPass = require("../controllers/otp/resetPass");
 
-router.post("/generate", userCheck("signin"), checkOtp, generateOtp);
-router.post("/verify", userCheck("signin"), verifyOtp);
-router.post("/resetpass", userCheck("signin"), resetPass);
+router.post("/generate", userCheck("resetPass"), checkOtp, generateOtp);
+router.post("/verify", userCheck("resetPass"), verifyOtp);
+router.post("/resetpass", userCheck("resetPass"), resetPass);
 
 module.exports = router;

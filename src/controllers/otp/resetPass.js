@@ -11,6 +11,7 @@ const resetPass = async (req, res) => {
     });
   }
 
+  //again encrypting pass_image
   let hashedPass = await bcrypt.hash(username, 10);
   hashedPass += pass_image.substring(pass_image.length - 1);
 

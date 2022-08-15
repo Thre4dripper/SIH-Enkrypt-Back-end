@@ -12,7 +12,7 @@ const userCheck = (type) => async (req, res, next) => {
   }
 
   username = username.toLowerCase();
-  //lowercased request body username for subsequent requests
+  //lowercase request body username for subsequent requests
   req.body.username = username;
 
   try {
@@ -29,7 +29,7 @@ const userCheck = (type) => async (req, res, next) => {
         return res
           .status(200)
           .json({ message: "User doesn't exist", isExist: false });
-    } else if (type === "signin") {
+    } else if (type === "signin" || type === "resetPass") {
       //user must exist when signing in
       if (user) next();
       //conflict

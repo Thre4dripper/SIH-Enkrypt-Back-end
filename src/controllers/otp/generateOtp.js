@@ -5,10 +5,12 @@ const { OTP_EXPIRY_TIME } = require("../../config/Constants");
 const User = require("../../models/user");
 const sendMailPromise = require("../../utils/sendMailPromise");
 
+/**====================== FUNCTION FOR GENERATING,SENDING AND SAVING OTP ========================**/
 const generateOtp = async (req, res) => {
   const { username } = req.body;
 
   if (!username) {
+    //bad request
     return res.status(400).send({
       message: "Username is required",
     });
@@ -16,6 +18,7 @@ const generateOtp = async (req, res) => {
 
   const user = await User.findOne({ username });
 
+  //generating 6 digit otp
   const otp = Math.floor(Math.random() * 1000000);
 
   try {
@@ -44,12 +47,14 @@ const generateOtp = async (req, res) => {
   }
 };
 
+/**=========================== FUNCTION FOR SAVING OTP IN DATABASE ==================================**/
 const dbSaveOTP = async (user, otp) => {
   user.otp = await bcrypt.hash(otp.toString(), 10);
   user.otpTime = Date.now() + OTP_EXPIRY_TIME;
   await user.save();
 };
 
+/**=========================== FUNCTION FOR SENDING OTP TO CLIENT ==================================**/
 const clientSendOTP = async (user, otp) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -67,7 +72,8 @@ const clientSendOTP = async (user, otp) => {
     from: process.env.NODEMAILER_USER,
     to: user.email,
     subject: "Enkrypt Password Reset",
-    html: `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
+    html: `
+<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
       <div style="margin:50px auto;width:70%;padding:20px 0">
         <div style="border-bottom:1px solid #eee">
           <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">${brand}</a>
@@ -83,7 +89,8 @@ const clientSendOTP = async (user, otp) => {
           <p>New Delhi</p>
         </div>
       </div>
-    </div>`,
+    </div>
+`,
   };
 
   return await sendMailPromise(transporter, mailOptions);
