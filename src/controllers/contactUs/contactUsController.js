@@ -1,7 +1,7 @@
 require("dotenv").config();
 const nodeMailer = require("nodemailer");
 
-const sendMailPromise = require("../utils/sendMailPromise");
+const sendMailPromise = require("../../utils/sendMailPromise");
 
 const contactUsController = async (req, res) => {
   const { name, email, message } = req.body;

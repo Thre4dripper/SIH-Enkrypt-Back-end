@@ -1,9 +1,9 @@
 const bcrypt = require("bcrypt");
 
-const User = require("../models/user");
-const { randomBinary } = require("../utils/utils");
-const generatePattern = require("../utils/generatePattern");
-const { USER_RATE_LIMIT_WINDOW, SESSION_TIMEOUT } = require("../config/Constants");
+const User = require("../../models/user");
+const { randomBinary } = require("../../utils/utils");
+const generatePattern = require("../../utils/generatePattern");
+const { USER_RATE_LIMIT_WINDOW, SESSION_TIMEOUT } = require("../../config/Constants");
 
 /** =========================== FUNCTION FOR CREATING AND STORING LOGIN PATTERN  ==============================*/
 const createLoginPattern = async (user, loginId) => {
@@ -15,12 +15,12 @@ const createLoginPattern = async (user, loginId) => {
 
   const hashedPattern = await bcrypt.hash(pattern, 10);
 
-  //session doesn't exist, creating new session
+  //session doesn't exist, creating nesghhw session
   if (!session) {
     user.sessions.push({
       loginId,
       pattern: hashedPattern,
-      patternTime: new Date().getTime() + SESSION_TIMEOUT,
+      patternTime: Date.now() + SESSION_TIMEOUT,
     });
   }
   //session exists, updating pattern and timestamp
@@ -31,7 +31,7 @@ const createLoginPattern = async (user, loginId) => {
 
   //last login gets reset after user rate window is over
   if (user.lastLogin === 0)
-    user.lastLogin = new Date().getTime() + USER_RATE_LIMIT_WINDOW;
+    user.lastLogin = Date.now() + USER_RATE_LIMIT_WINDOW;
 
   await user.save();
   return pattern;

@@ -19,10 +19,10 @@ const generateOtp = async (req, res) => {
   const otp = Math.floor(Math.random() * 1000000);
 
   try {
-    //sending OTP to user's email
+    //sending otp to user's email
     await clientSendOTP(user, otp);
 
-    //saving OTP in database
+    //saving otp in database
     await dbSaveOTP(user, otp);
 
     const maskedEmail =
@@ -45,8 +45,7 @@ const generateOtp = async (req, res) => {
 };
 
 const dbSaveOTP = async (user, otp) => {
-  const hashedOtp = await bcrypt.hash(otp.toString(), 10);
-  user.otp = hashedOtp;
+  user.otp = await bcrypt.hash(otp.toString(), 10);
   user.otpTime = Date.now() + OTP_EXPIRY_TIME;
   await user.save();
 };

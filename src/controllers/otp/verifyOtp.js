@@ -13,7 +13,7 @@ const verifyOtp = async (req, res) => {
 
   if (Date.now() > otpTime) {
     return res.status(401).json({
-      message: "OTP expired",
+      message: "otp expired",
       success: false,
     });
   }
@@ -24,13 +24,13 @@ const verifyOtp = async (req, res) => {
     await user.save();
 
     return res.status(200).json({
-      message: "OTP Verified",
+      message: "otp Verified",
       success: true,
     });
   }
 
   return res.status(200).json({
-    message: "Invalid OTP",
+    message: "Invalid otp",
     success: false,
   });
 };

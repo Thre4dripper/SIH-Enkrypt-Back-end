@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-const { userCheck } = require("../controllers/userCheck");
+const { userCheck } = require("../middlewares/userCheck");
 const checkOtp = require("../middlewares/checkOTP");
-const { generateOtp } = require("../controllers/OTP/generateOtp");
-const { verifyOtp } = require("../controllers/OTP/verifyOtp");
-const resetPass = require("../controllers/OTP/resetPass");
+const { generateOtp } = require("../controllers/otp/generateOtp");
+const { verifyOtp } = require("../controllers/otp/verifyOtp");
+const resetPass = require("../controllers/otp/resetPass");
 
 router.post("/generate", userCheck("signin"), checkOtp, generateOtp);
 router.post("/verify", userCheck("signin"), verifyOtp);
