@@ -1,6 +1,7 @@
 const User = require("../../models/user");
 
 const bcrypt = require("bcrypt");
+const sendConfirmMail = require("./sendConfirmMail");
 
 const signUpController = async (req, res) => {
   const { username, email, pass_image, category } = req.body;
@@ -26,6 +27,9 @@ const signUpController = async (req, res) => {
     });
 
     await user.save();
+
+    //sending otp to user's email
+    await sendConfirmMail(username,email);
 
     return res
       .status(201)
