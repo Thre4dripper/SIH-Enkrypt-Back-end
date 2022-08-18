@@ -20,13 +20,14 @@ const generateOtp = async (req, res) => {
 
   //generating 6 digit otp
   const otp = Math.floor(Math.random() * 1000000);
+  const newOtp = otp.toString().padEnd(6, "0");
 
   try {
     //sending otp to user's email
-    await clientSendOTP(user, otp);
+    await clientSendOTP(user, newOtp);
 
     //saving otp in database
-    await dbSaveOTP(user, otp);
+    await dbSaveOTP(user, newOtp);
 
     const maskedEmail =
       user.email.substring(0, 3) +
