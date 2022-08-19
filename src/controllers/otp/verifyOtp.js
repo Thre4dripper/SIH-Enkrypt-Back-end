@@ -19,10 +19,6 @@ const verifyOtp = async (req, res) => {
   }
 
   if (await bcrypt.compare(otp.toString(), user.otp)) {
-    //resetting otpTime and otp after successful top verification
-    user.otp = "";
-    user.otpTime = 0;
-    await user.save();
 
     return res.status(200).json({
       message: "otp Verified",
