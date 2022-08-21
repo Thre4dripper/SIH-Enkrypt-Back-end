@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-const {userCheck} = require("../middlewares/userCheck");
-const {sendImagePattern} = require("../controllers/login/sendImagePattern");
-const {validateLogin} = require("../controllers/login/validateLogin");
-const {validateUser} = require("../middlewares/auth");
-const {sessionRemover} = require("../middlewares/sessionRemover");
+const userCheck = require("../middlewares/userCheck");
 const userRateLimiter = require("../middlewares/userRateLimiter");
+const sessionRemover = require("../middlewares/sessionRemover");
+const sendImagePattern = require("../controllers/login/sendImagePattern");
+const validateUser = require("../middlewares/auth");
+const validateLogin = require("../controllers/login/validateLogin");
 
 router.post(
     "/check",

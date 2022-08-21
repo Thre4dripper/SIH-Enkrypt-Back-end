@@ -47,4 +47,4 @@ const userCheck = (type) => async (req, res, next) => {
   }
 };
 
-module.exports = { userCheck };
+module.exports = userCheck;

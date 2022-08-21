@@ -87,4 +87,4 @@ const validateLogin = async (req, res) => {
     }
 };
 
-module.exports = { validateLogin };
+module.exports = validateLogin;

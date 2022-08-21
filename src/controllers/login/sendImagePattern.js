@@ -48,4 +48,4 @@ const sendImagePattern = async (req, res) => {
     });
 };
 
-module.exports = { sendImagePattern };
+module.exports = sendImagePattern;
