@@ -1,6 +1,6 @@
-const {randomBinary} = require("../../utils/utils");
+const { randomBinary } = require("../../utils/utils");
 const bcrypt = require("bcrypt");
-const {SESSION_TIMEOUT, USER_RATE_LIMIT_WINDOW} = require("../../config/Constants");
+const { USER_RATE_LIMIT_WINDOW } = require("../../config/Constants");
 /** =========================== FUNCTION FOR CREATING AND STORING LOGIN PATTERN  ==============================*/
 const createLoginPattern = async (user, loginId) => {
     const session = user.sessions.find((session) => session.loginId === loginId);
@@ -16,7 +16,7 @@ const createLoginPattern = async (user, loginId) => {
         user.sessions.push({
             loginId,
             pattern: hashedPattern,
-            patternTime: Date.now() + SESSION_TIMEOUT,
+            patternTime: Date.now(),
         });
     }
     //session exists, updating pattern and timestamp
@@ -27,7 +27,7 @@ const createLoginPattern = async (user, loginId) => {
 
     //last login gets reset after user rate window is over
     if (user.lastLogin === 0)
-        user.lastLogin = Date.now() + USER_RATE_LIMIT_WINDOW;
+        user.lastLogin = Date.now();
 
     await user.save();
     return pattern;
@@ -48,4 +48,4 @@ const clearPattern = async (user, session) => {
     await user.save();
 };
 
-module.exports = {createLoginPattern, clearSession, clearPattern};
+module.exports = { createLoginPattern, clearSession, clearPattern };

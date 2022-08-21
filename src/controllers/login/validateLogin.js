@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../../models/user");
 const { createLoginPattern, clearPattern, clearSession } = require("./dbOperations");
+const { SESSION_TIMEOUT } = require("../../config/Constants");
 
 /** =========================== FUNCTION FOR FINAL VALIDATION OF USER BY PATTERN  ==============================*/
 const validateLogin = async (req, res) => {
@@ -30,7 +31,7 @@ const validateLogin = async (req, res) => {
 
         //getting pattern,patternTime from session
         const dbPattern = session.pattern;
-        const dbPatternTimestamp = session.patternTime;
+        const dbPatternTimestamp = session.patternTime + SESSION_TIMEOUT;
         const timestamp = Date.now();
 
         //checking validity of pattern by timestamp

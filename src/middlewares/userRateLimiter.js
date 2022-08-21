@@ -4,7 +4,7 @@ const fsPromises = require("fs").promises;
 const path = require("path");
 const moment = require("moment");
 
-const { USER_RATE_LIMIT_MAX } = require("../config/Constants");
+const { USER_RATE_LIMIT_MAX, USER_RATE_LIMIT_WINDOW } = require("../config/Constants");
 const User = require("../models/user");
 const sendMailPromise = require("../utils/sendMailPromise");
 
@@ -20,7 +20,7 @@ const userRateLimiter = async (req, res, next) => {
 
     const user = await User.findOne({ username });
     const attempts = user.__v;
-    const lastLogin = user.lastLogin;
+    const lastLogin = user.lastLogin + USER_RATE_LIMIT_WINDOW;
     const timestamp = Date.now();
 
     if (attempts >= USER_RATE_LIMIT_MAX && timestamp < lastLogin) {
@@ -66,7 +66,6 @@ const sendWarningMail = async (timestamp, email) => {
         subject: "Warning",
         html: html.replace("${lastLoginAttempt}", date.toString())
     }
-    console.log(mailOptions);
     //sending mail
     await sendMailPromise(transporter, mailOptions);
 }
