@@ -1,18 +1,20 @@
+require('dotenv').config();
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const User = require("../../models/user");
-const {createLoginPattern, clearPattern, clearSession} = require("./dbOperations");
+const { createLoginPattern, clearPattern, clearSession } = require("./dbOperations");
 
 /** =========================== FUNCTION FOR FINAL VALIDATION OF USER BY PATTERN  ==============================*/
 const validateLogin = async (req, res) => {
-    const {username, loginId, pattern} = req.body;
+    const { username, loginId, pattern } = req.body;
 
     if (!username || !loginId || !pattern) {
-        return res.status(400).json({message: "Empty Field(s)", success: false});
+        return res.status(400).json({ message: "Empty Field(s)", success: false });
     }
 
     try {
-        const user = await User.findOne({username}).exec();
+        const user = await User.findOne({ username }).exec();
 
         //getting session from user loginId
         const session = user.sessions.find(
@@ -51,12 +53,19 @@ const validateLogin = async (req, res) => {
             user.__v = 0;
             await user.save();
 
+            const token = await jwt.sign({ username }, process.env.JWT_SECRET, {
+                expiresIn: "300s",
+            });
+
             //returning success message
             return res.status(200).json({
                 message: "pattern validated",
                 success: true,
+                token,
             });
-        } else {
+        }
+        //pattern not matched
+        else {
             /*
             for wrong attempts, pattern gets reset for security reasons,
             although user gets redirected to login page for new pattern
@@ -78,4 +87,4 @@ const validateLogin = async (req, res) => {
     }
 };
 
-module.exports = {validateLogin};
+module.exports = { validateLogin };

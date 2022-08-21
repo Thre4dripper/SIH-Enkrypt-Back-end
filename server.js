@@ -23,6 +23,11 @@ db.once("open", () => {
   console.log("Connected to MongoDB");
   app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
+
+    //for removing all consoles in production
+    if(process.env.NODE_ENV === "production") {
+      console.log = () => {};
+    }
   });
 }).on("error", (err) => {
   console.log(err);
