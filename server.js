@@ -18,6 +18,7 @@ app.use("/signup", ipRateLimiter, require("./src/routes/signUp"));
 app.use("/signin", ipRateLimiter, require("./src/routes/signIn"));
 app.use("/otp", ipRateLimiter, require("./src/routes/otp"));
 app.use("/contactus", ipRateLimiter, require("./src/routes/contactUs"));
+app.use("/authentication", ipRateLimiter, require("./src/routes/authentication"));
 
 db.once("open", () => {
   console.log("Connected to MongoDB");
