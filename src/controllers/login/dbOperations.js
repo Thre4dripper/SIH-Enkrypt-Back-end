@@ -1,6 +1,5 @@
 const { randomBinary } = require("../../utils/utils");
 const bcrypt = require("bcrypt");
-const { USER_RATE_LIMIT_WINDOW } = require("../../config/Constants");
 /** =========================== FUNCTION FOR CREATING AND STORING LOGIN PATTERN  ==============================*/
 const createLoginPattern = async (user, loginId) => {
     const session = user.sessions.find((session) => session.loginId === loginId);

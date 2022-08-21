@@ -2,7 +2,6 @@ const User = require("../../models/user");
 
 const bcrypt = require("bcrypt");
 const sendConfirmMail = require("./sendConfirmMail");
-const { sign } = require("jsonwebtoken");
 
 const signUpController = async (req, res) => {
     const { username, email, pass_image, category } = req.body;
