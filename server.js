@@ -14,8 +14,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/signup", ipRateLimiter, require("./src/routes/signUp"));
-app.use("/signin", ipRateLimiter, require("./src/routes/signIn"));
+app.use("/signup", ipRateLimiter, require("./src/routes/signup"));
+app.use("/signin", ipRateLimiter, require("./src/routes/signin"));
 app.use("/otp", ipRateLimiter, require("./src/routes/otp"));
 app.use("/contactus", ipRateLimiter, require("./src/routes/contactUs"));
 app.use("/authentication", ipRateLimiter, require("./src/routes/authentication"));
