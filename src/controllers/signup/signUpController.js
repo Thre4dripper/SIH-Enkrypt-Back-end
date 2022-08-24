@@ -15,9 +15,14 @@ const signUpController = async (req, res) => {
     }
 
     try {
-        //encrypting pass_image
-        const imageNumber = pass_image.substring(pass_image.indexOf("_") + 1);
-        const hashedImage = await bcrypt.hash(imageNumber, 10);
+        //encrypting pass_image subsequence
+
+        let hashedImage = "";
+        for (let i = 0; i < pass_image.length; i++) {
+            hashedImage += await bcrypt.hash(pass_image[i], 10);
+            if (i !== pass_image.length - 1)
+                hashedImage += "-";
+        }
 
         const user = new User({
             username,
@@ -29,7 +34,7 @@ const signUpController = async (req, res) => {
         await user.save();
 
         //sending otp to user's email
-        await sendConfirmMail(username, email);
+        //await sendConfirmMail(username, email);
 
         return res
             .status(201)
