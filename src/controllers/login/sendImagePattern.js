@@ -30,15 +30,20 @@ const sendImagePattern = async (req, res) => {
     }
 
     //getting pass image number from hashed pass_image
-    let imageNumber = 0;
-    for (let i = 0; i < categorySize; i++) {
-        if (bcrypt.compareSync(imageNumber.toString(), pass_image))
-            break;
-        imageNumber++
+    let imageNumbers = [];
+    let pass_images = pass_image.split("-");
+    for (let i = 0; i < pass_images.length; i++) {
+        let imageNumber = 0;
+        for (let j = 0; j < categorySize; j++) {
+            if (bcrypt.compareSync(imageNumber.toString(), pass_images[i]))
+                break;
+            imageNumber++
+        }
+        imageNumbers.push(imageNumber);
     }
 
     //generating image pattern to be sent to client
-    const imagesPattern = generatePattern(pattern, categorySize, imageNumber);
+    const imagesPattern = generatePattern(pattern, categorySize, imageNumbers);
 
     return res.status(200).json({
         message: "pattern generated",
