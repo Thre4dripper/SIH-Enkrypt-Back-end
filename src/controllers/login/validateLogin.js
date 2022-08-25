@@ -67,11 +67,12 @@ const validateLogin = async (req, res) => {
         }
         //pattern not matched
         else {
+            const imagesNumber = user.pass_image.split("-").length;
             /*
             for wrong attempts, pattern gets reset for security reasons,
             although user gets redirected to login page for new pattern
             */
-            await createLoginPattern(user, loginId);
+            await createLoginPattern(user, loginId, imagesNumber);
 
             //unauthorized
             return res.status(401).json({

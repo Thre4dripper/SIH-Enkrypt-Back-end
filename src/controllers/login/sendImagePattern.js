@@ -13,9 +13,6 @@ const sendImagePattern = async (req, res) => {
 
     const user = await User.findOne({ username }).exec();
 
-    //firstly creating login pattern to be stored in DB and also get it
-    const pattern = await createLoginPattern(user, loginId);
-
     let { category, pass_image } = user;
 
     const categorySize = categoriesLength.find(
@@ -41,6 +38,9 @@ const sendImagePattern = async (req, res) => {
         }
         imageNumbers.push(imageNumber);
     }
+
+    //firstly creating login pattern to be stored in DB and also get it
+    const pattern = await createLoginPattern(user, loginId, imageNumbers.length);
 
     //generating image pattern to be sent to client
     const imagesPattern = generatePattern(pattern, categorySize, imageNumbers);

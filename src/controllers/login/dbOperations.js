@@ -1,12 +1,12 @@
 const { randomBinary } = require("../../utils/utils");
 const bcrypt = require("bcrypt");
 /** =========================== FUNCTION FOR CREATING AND STORING LOGIN PATTERN  ==============================*/
-const createLoginPattern = async (user, loginId) => {
+const createLoginPattern = async (user, loginId, imagesNumber) => {
     const session = user.sessions.find((session) => session.loginId === loginId);
     const attempts = user.__v;
 
     //pattern length is decided by user attempts
-    const pattern = randomBinary(attempts);
+    const pattern = randomBinary(attempts, imagesNumber);
 
     const hashedPattern = await bcrypt.hash(pattern, 10);
 
