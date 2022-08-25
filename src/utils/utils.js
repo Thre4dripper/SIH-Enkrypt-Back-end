@@ -26,10 +26,10 @@ const randomBinary = (attempts, imagesNumber) => {
 };
 
 /**======================== FUNCTION FOR GENERATING RANDOM VALUES IN ARRAY =========================*/
-const randomArray = (arr, min, max) => {
+const randomArray = (arr, imageNumbers, min, max) => {
     const num = randomInt(min, max);
-    if (arr.includes(num)) {
-        return randomArray(arr, min, max);
+    if (imageNumbers.some((item) => item === num) || arr.includes(num)) {
+        return randomArray(arr, imageNumbers, min, max);
     } else {
         arr.push(num);
         return arr;
