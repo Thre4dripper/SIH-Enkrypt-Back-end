@@ -2,6 +2,7 @@ const User = require("../../models/user");
 
 const bcrypt = require("bcrypt");
 const sendConfirmMail = require("./sendConfirmMail");
+const decryptImage = require("./decryptPassImage");
 
 const signUpController = async (req, res) => {
     const { username, profEmail, personalEmail, phoneNumber, pass_image, category } = req.body;
@@ -16,7 +17,7 @@ const signUpController = async (req, res) => {
 
     try {
         //encrypting pass_image
-        const imageNumber = pass_image.substring(pass_image.indexOf("_") + 1);
+        const imageNumber = decryptImage(pass_image)
         const hashedImage = await bcrypt.hash(imageNumber, 10);
 
         const user = new User({
