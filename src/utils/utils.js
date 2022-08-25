@@ -1,4 +1,4 @@
-const {GRIDS_COUNT} = require("../config/Constants");
+const { GRIDS_COUNT } = require("../config/Constants");
 
 /**======================== FUNCTION FOR GENERATING RANDOM NUMBERS B/W LIMITS ===========================*/
 const randomInt = (min, max) => Math.floor(Math.random() * (max - min) + min);
@@ -7,14 +7,21 @@ const randomInt = (min, max) => Math.floor(Math.random() * (max - min) + min);
 const randomBinary = (attempts) => {
     let patternLength = GRIDS_COUNT + attempts;
 
-    let number = randomInt(0, Math.pow(2, patternLength));
-
     let str = "";
-    while (number !== 0) {
-        str += number % 2;
-        number = parseInt(number / 2);
+    for (let i = 0; i < patternLength; i++) {
+        str += "0";
     }
-    return str.padStart(patternLength, "0");
+
+    for (let i = 0; i < 3; i++) {
+        const index = randomInt(0, patternLength);
+        if (str[index] === "1") {
+            i--;
+            continue;
+        }
+        str = str.substring(0, index) + "1" + str.substring(index + 1);
+    }
+
+    return str;
 };
 
 /**======================== FUNCTION FOR GENERATING RANDOM VALUES IN ARRAY =========================*/
@@ -28,4 +35,4 @@ const randomArray = (arr, pass_image, min, max) => {
     }
 };
 
-module.exports = {randomArray, randomBinary};
+module.exports = { randomArray, randomBinary };
