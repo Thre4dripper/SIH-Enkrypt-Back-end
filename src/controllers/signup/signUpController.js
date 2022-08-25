@@ -4,9 +4,9 @@ const bcrypt = require("bcrypt");
 const sendConfirmMail = require("./sendConfirmMail");
 
 const signUpController = async (req, res) => {
-    const { username, email, pass_image, category } = req.body;
+    const { username, profEmail, personalEmail, phoneNumber, pass_image, category } = req.body;
 
-    if (!username || !email || !pass_image || !category) {
+    if (!username || !profEmail || !personalEmail || !phoneNumber || !pass_image || !category) {
         //bad request
         return res.status(400).json({
             message: "Empty Fields",
@@ -21,7 +21,9 @@ const signUpController = async (req, res) => {
 
         const user = new User({
             username,
-            email,
+            prof_email: profEmail,
+            personal_email: personalEmail,
+            phone_number: phoneNumber,
             pass_image: hashedImage,
             category: category.toLowerCase(),
         });
@@ -29,7 +31,7 @@ const signUpController = async (req, res) => {
         await user.save();
 
         //sending otp to user's email
-        await sendConfirmMail(username, email);
+        await sendConfirmMail(username, profEmail);
 
         return res
             .status(201)

@@ -1,5 +1,6 @@
 require("dotenv").config();
 const nodemailer = require("nodemailer");
+const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 const bcrypt = require("bcrypt");
 const fsPromises = require("fs").promises;
 const path = require("path");
@@ -21,25 +22,42 @@ const generateOtp = async (req, res) => {
     const user = await User.findOne({ username });
 
     //generating 6 digit otp
-    const otp = Math.floor(Math.random() * 1000000);
-    const newOtp = otp.toString().padEnd(6, "0");
+    const professionalOtp = Math.floor(Math.random() * 100).toString().padStart(2, "0");
+    const personalOtp = Math.floor(Math.random() * 100).toString().padStart(2, "0");
+    const smsOtp = Math.floor(Math.random() * 100).toString().padStart(2, "0");
+    const otp = professionalOtp + personalOtp + smsOtp;
 
     try {
         //sending otp to user's email
-        await clientSendOTP(user, newOtp);
+        await Promise.all(
+            [
+                sendOtpMail(user, "professional", professionalOtp),
+                sendOtpMail(user, "personal", personalOtp),
+                sendSmsOtp(user, smsOtp)
+            ]
+        );
 
         //saving otp in database
-        await dbSaveOTP(user, newOtp);
+        await dbSaveOTP(user, otp);
 
-        const maskedEmail =
-            user.email.substring(0, 3) +
+        const maskedProfEmail =
+            user.prof_email.substring(0, 3) +
             "****" +
-            user.email.substring(user.email.indexOf("@") - 1);
+            user.prof_email.substring(user.prof_email.indexOf("@") - 1);
+
+        const maskedPersonalEmail =
+            user.personal_email.substring(0, 3) +
+            "****" +
+            user.personal_email.substring(user.personal_email.indexOf("@") - 1);
+
+        const maskedPhoneNumber = user.phone_number.substring(0, 3) + "****" + user.phone_number.substring(7);
 
         //success
         res.status(200).json({
-            message: `OTP sent successfully to ${user.username}'s registered email`,
-            email: maskedEmail,
+            message: `OTP sent successfully to ${user.username}'s registered emails and phone number`,
+            professionalEmail: maskedProfEmail,
+            personalEmail: maskedPersonalEmail,
+            phoneNumber: maskedPhoneNumber,
             success: true,
         });
     } catch (err) {
@@ -58,7 +76,7 @@ const dbSaveOTP = async (user, otp) => {
 };
 
 /**=========================== FUNCTION FOR SENDING OTP TO CLIENT ==================================**/
-const clientSendOTP = async (user, otp) => {
+const sendOtpMail = async (user, type, otp) => {
     //getting html template
     const html = await fsPromises.readFile(path.join(__dirname, "..", "..", "views", "otpMail.html"), "utf8");
     //creating transporter
@@ -77,7 +95,7 @@ const clientSendOTP = async (user, otp) => {
     //creating mail options
     const mailOptions = {
         from: process.env.NODEMAILER_USER,
-        to: user.email,
+        to: type === "professional" ? user.prof_email : user.personal_email,
         subject: "Enkrypt Password Reset",
         html: html.replace("${otp}", otp).replace("${brand}", brand),
     };
@@ -85,6 +103,16 @@ const clientSendOTP = async (user, otp) => {
     //sending mail
     return await sendMailPromise(transporter, mailOptions);
 };
+
+const sendSmsOtp = async (user, otp) => {
+    client.messages
+        .create({
+            body: 'Your OTP is ' + otp,
+            from: process.env.TWILIO_PHONE_NUMBER,
+            to: user.phone_number
+        })
+        .then(message => console.log(message.sid));
+}
 
 
 module.exports = { generateOtp };

@@ -14,6 +14,9 @@ const checkOtp = async (req, res, next) => {
     if (user.otp.length !== 0 && user.otpTime > Date.now()) {
         return res.status(200).json({
             message: "Please enter Previous otp or wait for 5 minutes",
+            professionalEmail: user.prof_email,
+            personalEmail: user.personal_email,
+            phoneNumber: user.phone_number,
             success: false,
         });
     }
