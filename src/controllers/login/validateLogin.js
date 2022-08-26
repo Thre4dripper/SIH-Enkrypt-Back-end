@@ -62,6 +62,10 @@ const validateLogin = async (req, res) => {
             return res.status(200).json({
                 message: "pattern validated",
                 success: true,
+                name: user.username,
+                professionalEmail: user.prof_email,
+                personalEmail: user.personal_email,
+                phoneNumber: user.phone_number,
                 token,
             });
         }
