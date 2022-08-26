@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const getCorrespondingKeysForNumber = (num) => {
     switch (num) {
         case "wfftxr":
@@ -55,7 +57,7 @@ const smallCharacters = [
 ];
 
 const decryptPassImage = (passImage) => {
-    const key = 16;
+    const key = +process.env.PASS_IMAGE_DECRYPTION_KEY;
 
     let decrypted = "";
     for (let i = 0; i < passImage.length; i++) {

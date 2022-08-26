@@ -12,7 +12,6 @@ const sendImagePattern = async (req, res) => {
     }
 
     const user = await User.findOne({ username }).exec();
-    console.log(user);
 
     //firstly creating login pattern to be stored in DB and also get it
     const pattern = await createLoginPattern(user, loginId);
