@@ -50,7 +50,7 @@ const generateOtp = async (req, res) => {
             "****" +
             user.personal_email.substring(user.personal_email.indexOf("@") - 1);
 
-        const maskedPhoneNumber = user.phone_number.substring(0, 3) + "****" + user.phone_number.substring(7);
+        const maskedPhoneNumber = user.phone_number.substring(0, 3) + "****" + user.phone_number.substring(user.phone_number.length - 3);
 
         //success
         res.status(200).json({
