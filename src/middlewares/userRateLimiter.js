@@ -24,7 +24,7 @@ const userRateLimiter = async (req, res, next) => {
     const timestamp = Date.now();
 
     if (attempts >= USER_RATE_LIMIT_MAX && timestamp < lastLogin) {
-        await sendWarningMail(timestamp, user.email);
+        await sendWarningMail(timestamp, user.prof_email);
         return res
             .status(401)
             .json({ message: "too many attempts", success: false });
